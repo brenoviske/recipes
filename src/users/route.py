@@ -7,9 +7,16 @@ from sqlalchemy.orm import Session
 from src.database.config import get_db
 from src.users.model import User
 from src.users.controller import UserController
-from src.security.sec_guards import hash_password , verify_password
 
 router = APIRouter()
+
+# ------- Security methods ------
+
+def hash(password:str):
+
+def check(plain:str,password_hashed:str):
+
+
 
 @router.post('/add')
 def add(
@@ -22,7 +29,7 @@ def add(
     new_user = User(
         email = email,
         username = username,
-        password_hash = hash_password(password)
+        password_hash = password
     )
 
     return UserController.add(new_user,db)
@@ -36,7 +43,7 @@ def login(
 
     existing_user = db.query(User).filter(User.email == email).first() # --- Checking here to see if the user lies within the current database
 
-    if existing_user and verify_password(password,existing_user.password_hash):
+    if existing_user and check(password,existing_user.password_hash):
         return {'status':'success'}
     return {'status':'error','message':'Email or Password is incorrect'}
 
